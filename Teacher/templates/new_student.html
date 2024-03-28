@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %} Student CSV Upload {% endblock %}
+
+{% block head %}
+<style>
+h1 {
+   
+  font-size: 70px;
+  font-weight: 600;
+  background-image: linear-gradient(to left, #009FFD, #2A2A72);
+  color: transparent;
+  background-clip: text;
+  text-align : center;
+  -webkit-background-clip: text;
+  }
+
+  .main-flex {
+    
+
+    margin: auto;
+    width: 50%;
+    border: 3px;
+    padding: 10px;
+    
+  }
+  
+
+  
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <h1 style="text-align: center;">Student Details Upload</h1>
+    <form method="POST" enctype="multipart/form-data" name="upload">
+        {{ form.hidden_tag()}}       
+        
+        <div class="main-flex form-outline mb-4">
+            
+                <div class="main-flex">
+                {{ form.file(placeholder='Choose File')}}
+                {% for error in form.file.errors %}
+                <p>{{ error }}</p>
+                {% endfor %}<br><br> 
+                </div>              
+                <div class="main-flex">
+                    <button class="file-upload-btn" type="submit">Upload</button>
+                </div>
+            
+            
+        </div>
+        
+        
+    </form>
+</div>
+
+{% endblock %}
