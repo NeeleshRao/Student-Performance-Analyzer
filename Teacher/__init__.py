@@ -8,11 +8,11 @@ secret_key = os.urandom(32)
 
 app = Flask(__name__)
         
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:password@localhost/school'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost/school'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = secret_key
-app.config['UPLOAD_FOLDER'] = "C:/Users/Neelesh Thonse Rao/Desktop/programming/Student Performance Analyzer/after cie/nextone/Teacher/static/uploads/"
-app.config['SAMPLES_FOLDER'] = "C:/Users/Neelesh Thonse Rao/Desktop/programming/Student Performance Analyzer/after cie/nextone/Teacher/static/samples/"
+app.config['UPLOAD_FOLDER'] = "E:/Student Attainment Project/N_Project/Teacher/static/uploads/"
+app.config['SAMPLES_FOLDER'] = "E:/Student Attainment Project/N_Project/Teacher/static/samples/"
 
 db = SQLAlchemy(app)
 

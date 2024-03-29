@@ -316,8 +316,7 @@ def set_grade():
             
             schemeyear = form.scheme_year.data
             
-            for i in r:
-                
+            for i in r:         
                 grade_marks_access = grade_marks.query.filter_by(scheme=schemeyear, alloted_grade=i['GRADE']).first()
                 if grade_marks_access:
                     print("Notherr", i['GRADE'])
@@ -3091,8 +3090,9 @@ def upload_student():
         with open(file_path, "r", newline="") as f:
             r = csv.DictReader(f)
             new_str = ""
-
             for i in r:
+                if(str(i["USN"])==""):
+                    continue
                 new_str += str(i["USN"]) + ","
 
                 check = student.query.filter_by(usn=i["USN"]).first()
@@ -3355,6 +3355,8 @@ def upload_assign():
             r = csv.DictReader(f)
 
             for i in r:
+                if(i["USN"]==""):
+                    continue
                 co_scored = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
                 new_rec = [
                     ans1(i["p1r1"]),
@@ -3741,7 +3743,8 @@ def upload_csv():
                 #                 t.total_co7_marks, t.total_co8_marks, t.total_co9_marks, t.total_co10_marks]
 
                 for i in r:
-
+                    if(i["USN"]==""):
+                        continue
                     def ans2(num):
                         return float(num) if num else sqlalchemy.null()
 
@@ -3977,7 +3980,8 @@ def upload_csv():
 
             elif the_cie_number == 2:
                 t = test2_mapping.query.filter_by(coursecode=given_coursecode).first()
-
+                print("TEST 2 :",t)
+                print(given_coursecode)
                 # lt and ltm are the values from the test2 database created locally
                 lt = [
                     t.q1a,
@@ -4019,6 +4023,8 @@ def upload_csv():
                 #                 t.total_co7_marks, t.total_co8_marks, t.total_co9_marks, t.total_co10_marks]
 
                 for i in r:
+                    if(i["USN"]==""):
+                        continue
 
                     def ans2(num):
                         return float(num) if num else sqlalchemy.null()
@@ -4064,7 +4070,6 @@ def upload_csv():
                         m.q14m,
                         m.q15m,
                     ]
-
                     new_quiz = [
                         ans1((i["1"])),
                         ans1((i["2"])),
@@ -4299,7 +4304,8 @@ def upload_csv():
                 #                 t.total_co7_marks, t.total_co8_marks, t.total_co9_marks, t.total_co10_marks]
 
                 for i in r:
-
+                    if(i["USN"]==""):
+                        continue
                     def ans2(num):
                         return float(num) if num else sqlalchemy.null()
 
