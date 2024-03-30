@@ -3167,10 +3167,12 @@ def sem_gradetomarks():
             r = csv.DictReader(f)
 
             for i in r:
+                if(i["USN"]==""):
+                    continue
                 print(i["USN"], i["Grade"])
                 the_grade = str(i["Grade"])
                 
-                if the_grade in ["F", "NSSR", "NSAR", "X", "NE", "I", "W"]:
+                if the_grade in ["F", "NSSR", "NSAR", "X", "NE", "I", "W",""]:
                     gp = 0
                 else:
                     gp = grade_marks.query.filter_by(scheme=2021, alloted_grade=the_grade).first().gpoint
