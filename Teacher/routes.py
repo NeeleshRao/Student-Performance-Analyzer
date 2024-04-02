@@ -6925,8 +6925,8 @@ def thresh_calc():
             
             db.session.commit()
             
-            flash("Threshold has been calculated !", category='success')
-            return render_template("newmain.html")
+    flash("Threshold has been calculated !", category='success')
+    return render_template("newmain.html")
 
 
 @app.route('/po_firststep', methods=['GET', 'POST'])
