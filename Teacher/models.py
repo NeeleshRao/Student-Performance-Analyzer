@@ -18,8 +18,8 @@ def load_user(user_id):
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer(), primary_key = True)
     username = db.Column(db.String(length = 30), nullable = False, unique = True)
-    password_hash = db.Column(db.String(length = 300), nullable = False)
-
+    password_hash = db.Column(db.String(length = 300), nullable = True)
+    role=db.Column(db.String(length=30),nullable=False,default="staff")
     # def __init__(self, username, password):
     #     self.username = username
     #     self.password = password

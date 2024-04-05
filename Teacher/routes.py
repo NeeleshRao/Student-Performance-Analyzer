@@ -97,8 +97,6 @@ def home_page():
 
 @app.route("/displaymain")
 def disp_main():
-    session["staffid"] = ""
-    session["coursecode"] = ""
     return render_template("newmain.html")
 
 
@@ -113,9 +111,9 @@ def set_id_cc():
 
     if request.method == "POST":
         the_coursecode = request.form["coursecode"]
-        the_staffid = request.form["staffid"]
+        the_staffid = session['staffid']
 
-        print(the_coursecode, the_staffid)
+        print("Hello",the_coursecode, the_staffid)
         cc = staffid_cc.query.filter_by(
             coursecode=the_coursecode, staffid=the_staffid
         ).first()
@@ -145,19 +143,27 @@ def set_id_cc():
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data)
-        user.set_password(form.password1.data)
-        db.session.add(user)
-        db.session.commit()
-
-        flash(f"Success! You have registered as : {user.username}", category="success")
-        return redirect(url_for("login1"))
+        attempted_user = User.query.filter_by(username=form.username.data).first()
+        if attempted_user is None:
+            flash("Staff not added by Admin. Contact Admin",category='danger')
+            return render_template("registration.html", form=form)
+        
+        if attempted_user.password_hash:
+            flash(f"Account Exists !!", category="info")
+            return redirect(url_for("login1"))
+        else:
+            user = User(username=form.username.data)
+            user.set_password(form.password1.data)
+            update_user = User.query.filter_by(username=form.username.data).update(dict(password_hash=user.password_hash))  
+            db.session.commit()
+            flash(f"Success! You have registered as : {user.username}", category="success")
+            return redirect(url_for("login1"))
 
     if form.errors != {}:
         for err_msg in form.errors.values():
             flash(f"There was an error : {err_msg}", category="danger")
 
-    return render_template("registration.html", form=form)
+    return render_template("registration.html",form=form)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -166,15 +172,19 @@ def login1():
     if form.validate_on_submit():
         attempted_user = User.query.filter_by(username=form.username.data).first()
         print(attempted_user)
+        if attempted_user is not None and not attempted_user.password_hash:
+            flash("Kindly register", category='danger')
+            return render_template("user_login.html", form=form)
+        
         if attempted_user is not None and attempted_user.check_password(
             form.password.data
         ):
             login_user(attempted_user)
+            session["staffid"]=attempted_user.username
             flash(
-                f"Success! You are logged in as : {attempted_user.username}",
+                f"Success! You are logged in as : {session['staffid']}",
                 category="success",
             )
-            # return redirect(url_for('market_page'))
             return redirect(url_for("disp_main"))
         else:
             flash(

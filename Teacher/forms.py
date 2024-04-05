@@ -38,10 +38,10 @@ class RegistrationForm(FlaskForm):
     )
     submit = SubmitField("Register")
 
-    def validate_username(self, username):
-        user = User.query.filter_by(username=username.data).first()
-        if user:
-            raise ValidationError("Username already exists!")
+    # def validate_username(self, username):
+    #     user = User.query.filter_by(username=username.data).first()
+    #     if user:
+    #         raise ValidationError("Username already exists!")
 
 
 class LoginForm(FlaskForm):
@@ -418,7 +418,6 @@ class main_stid_cc(FlaskForm):
     coursecode = StringField(
         "Course Code", validators=[DataRequired(), Length(min=2, max=30)]
     )
-    staffid = StringField("Staff ID", validators=[DataRequired(), Length(min=4, max=8)])
     submit = SubmitField("Submit")
 
 
