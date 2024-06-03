@@ -97,8 +97,6 @@ def home_page():
 
 @app.route("/displaymain")
 def disp_main():
-    session["staffid"] = ""
-    session["coursecode"] = ""
     return render_template("newmain.html")
 
 
@@ -113,9 +111,9 @@ def set_id_cc():
 
     if request.method == "POST":
         the_coursecode = request.form["coursecode"]
-        the_staffid = request.form["staffid"]
+        the_staffid = session['staffid']
 
-        print(the_coursecode, the_staffid)
+        print("Hello",the_coursecode, the_staffid)
         cc = staffid_cc.query.filter_by(
             coursecode=the_coursecode, staffid=the_staffid
         ).first()
@@ -145,19 +143,27 @@ def set_id_cc():
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data)
-        user.set_password(form.password1.data)
-        db.session.add(user)
-        db.session.commit()
-
-        flash(f"Success! You have registered as : {user.username}", category="success")
-        return redirect(url_for("login1"))
+        attempted_user = User.query.filter_by(username=form.username.data).first()
+        if attempted_user is None:
+            flash("Staff not added by Admin. Contact Admin",category='danger')
+            return render_template("registration.html", form=form)
+        
+        if attempted_user.password_hash:
+            flash(f"Account Exists !!", category="info")
+            return redirect(url_for("login1"))
+        else:
+            user = User(username=form.username.data)
+            user.set_password(form.password1.data)
+            update_user = User.query.filter_by(username=form.username.data).update(dict(password_hash=user.password_hash))  
+            db.session.commit()
+            flash(f"Success! You have registered as : {user.username}", category="success")
+            return redirect(url_for("login1"))
 
     if form.errors != {}:
         for err_msg in form.errors.values():
             flash(f"There was an error : {err_msg}", category="danger")
 
-    return render_template("registration.html", form=form)
+    return render_template("registration.html",form=form)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -166,15 +172,19 @@ def login1():
     if form.validate_on_submit():
         attempted_user = User.query.filter_by(username=form.username.data).first()
         print(attempted_user)
+        if attempted_user is not None and not attempted_user.password_hash:
+            flash("Kindly register", category='danger')
+            return render_template("user_login.html", form=form)
+        
         if attempted_user is not None and attempted_user.check_password(
             form.password.data
         ):
             login_user(attempted_user)
+            session["staffid"]=attempted_user.username
             flash(
-                f"Success! You are logged in as : {attempted_user.username}",
+                f"Success! You are logged in as : {session['staffid']}",
                 category="success",
             )
-            # return redirect(url_for('market_page'))
             return redirect(url_for("disp_main"))
         else:
             flash(
@@ -316,8 +326,7 @@ def set_grade():
             
             schemeyear = form.scheme_year.data
             
-            for i in r:
-                
+            for i in r:         
                 grade_marks_access = grade_marks.query.filter_by(scheme=schemeyear, alloted_grade=i['GRADE']).first()
                 if grade_marks_access:
                     print("Notherr", i['GRADE'])
@@ -3091,8 +3100,9 @@ def upload_student():
         with open(file_path, "r", newline="") as f:
             r = csv.DictReader(f)
             new_str = ""
-
             for i in r:
+                if(str(i["USN"])==""):
+                    continue
                 new_str += str(i["USN"]) + ","
 
                 check = student.query.filter_by(usn=i["USN"]).first()
@@ -3167,10 +3177,12 @@ def sem_gradetomarks():
             r = csv.DictReader(f)
 
             for i in r:
+                if(i["USN"]==""):
+                    continue
                 print(i["USN"], i["Grade"])
                 the_grade = str(i["Grade"])
                 
-                if the_grade in ["F", "NSSR", "NSAR", "X", "NE", "I", "W"]:
+                if the_grade in ["F", "NSSR", "NSAR", "X", "NE", "I", "W",""]:
                     gp = 0
                 else:
                     gp = grade_marks.query.filter_by(scheme=2021, alloted_grade=the_grade).first().gpoint
@@ -3355,6 +3367,8 @@ def upload_assign():
             r = csv.DictReader(f)
 
             for i in r:
+                if(i["USN"]==""):
+                    continue
                 co_scored = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
                 new_rec = [
                     ans1(i["p1r1"]),
@@ -3741,7 +3755,8 @@ def upload_csv():
                 #                 t.total_co7_marks, t.total_co8_marks, t.total_co9_marks, t.total_co10_marks]
 
                 for i in r:
-
+                    if(i["USN"]==""):
+                        continue
                     def ans2(num):
                         return float(num) if num else sqlalchemy.null()
 
@@ -3977,7 +3992,8 @@ def upload_csv():
 
             elif the_cie_number == 2:
                 t = test2_mapping.query.filter_by(coursecode=given_coursecode).first()
-
+                print("TEST 2 :",t)
+                print(given_coursecode)
                 # lt and ltm are the values from the test2 database created locally
                 lt = [
                     t.q1a,
@@ -4019,6 +4035,8 @@ def upload_csv():
                 #                 t.total_co7_marks, t.total_co8_marks, t.total_co9_marks, t.total_co10_marks]
 
                 for i in r:
+                    if(i["USN"]==""):
+                        continue
 
                     def ans2(num):
                         return float(num) if num else sqlalchemy.null()
@@ -4064,7 +4082,6 @@ def upload_csv():
                         m.q14m,
                         m.q15m,
                     ]
-
                     new_quiz = [
                         ans1((i["1"])),
                         ans1((i["2"])),
@@ -4299,7 +4316,8 @@ def upload_csv():
                 #                 t.total_co7_marks, t.total_co8_marks, t.total_co9_marks, t.total_co10_marks]
 
                 for i in r:
-
+                    if(i["USN"]==""):
+                        continue
                     def ans2(num):
                         return float(num) if num else sqlalchemy.null()
 
@@ -6917,8 +6935,8 @@ def thresh_calc():
             
             db.session.commit()
             
-            flash("Threshold has been calculated !", category='success')
-            return render_template("newmain.html")
+    flash("Threshold has been calculated !", category='success')
+    return render_template("newmain.html")
 
 
 @app.route('/po_firststep', methods=['GET', 'POST'])

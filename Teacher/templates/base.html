@@ -57,7 +57,7 @@
     >
       <a class="navbar-brand" href="{{ url_for('set_main_without_refresh')}}">
         <img
-          src="https://rvce.edu.in/sites/default/files/logo_0.png"
+          src="{{ url_for('static', filename='images/logo_new.png')}}"
           alt="RV Logo"
           class="img-fluid"
         />
@@ -97,10 +97,6 @@
           action="{{url_for('set_id_cc')}}"
           method="post"
         >
-          <label class="nav-item" for="staffid">Staff ID</label>
-          <input class="form-control mr-sm-2" id="staffid" name="staffid"
-          type="search" placeholder='{{session['staffid']}}'
-          aria-label="Search">
           <label class="nav-item" for="coursecode">Course Code</label>
           <input class="form-control mr-sm-2" id="coursecode" name="coursecode"
           type="search" placeholder='{{session['coursecode']}}'

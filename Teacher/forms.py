@@ -38,10 +38,10 @@ class RegistrationForm(FlaskForm):
     )
     submit = SubmitField("Register")
 
-    def validate_username(self, username):
-        user = User.query.filter_by(username=username.data).first()
-        if user:
-            raise ValidationError("Username already exists!")
+    # def validate_username(self, username):
+    #     user = User.query.filter_by(username=username.data).first()
+    #     if user:
+    #         raise ValidationError("Username already exists!")
 
 
 class LoginForm(FlaskForm):
@@ -376,22 +376,22 @@ class single_phase(Form):
     )
 
     rubrics1m = IntegerField(
-        "Marks rubrics1", validators=[NumberRange(min=0, max=5)], default=0
+        "Marks rubrics1", validators=[NumberRange(min=0)], default=0
     )
     rubrics2m = IntegerField(
-        "Marks rubrics2", validators=[NumberRange(min=0, max=5)], default=0
+        "Marks rubrics2", validators=[NumberRange(min=0)], default=0
     )
     rubrics3m = IntegerField(
-        "Marks rubrics3", validators=[NumberRange(min=0, max=5)], default=0
+        "Marks rubrics3", validators=[NumberRange(min=0)], default=0
     )
     rubrics4m = IntegerField(
-        "Marks rubrics4", validators=[NumberRange(min=0, max=5)], default=0
+        "Marks rubrics4", validators=[NumberRange(min=0)], default=0
     )
     rubrics5m = IntegerField(
-        "Marks rubrics5", validators=[NumberRange(min=0, max=5)], default=0
+        "Marks rubrics5", validators=[NumberRange(min=0)], default=0
     )
     rubrics6m = IntegerField(
-        "Marks rubrics6", validators=[NumberRange(min=0, max=5)], default=0
+        "Marks rubrics6", validators=[NumberRange(min=0)], default=0
     )
 
 
@@ -418,7 +418,6 @@ class main_stid_cc(FlaskForm):
     coursecode = StringField(
         "Course Code", validators=[DataRequired(), Length(min=2, max=30)]
     )
-    staffid = StringField("Staff ID", validators=[DataRequired(), Length(min=4, max=8)])
     submit = SubmitField("Submit")
 
 
